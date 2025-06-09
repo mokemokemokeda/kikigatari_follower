@@ -61,30 +61,31 @@ if not twitter_bearer_token:
 headers = {"Authorization": f"Bearer {twitter_bearer_token}"}
 url = "https://api.twitter.com/2/users/by/username/"
 
-# Google Drive から Twitter アカウントリスト取得
-file_id = get_file_id("kikigatari_accounts.csv")
-if file_id:
-    df = retry_request(lambda: pd.read_csv(f"https://drive.google.com/uc?id={file_id}"))
-    print("Twitterアカウントリストを取得しました")
-else:
-
 # 日付取得
 today = datetime.today().strftime("%Y/%m/%d")
 followers_data_list = []
 
-for username in df["username"]:
-    user_url = f"{url}{username}?user.fields=public_metrics"
-    response = requests.get(user_url, headers=headers)
+username = kikigatari_kac
+followers_data = {"Date": today}
+user_url = f"{url}{username}?user.fields=public_metrics"
 
-    if response.status_code == 200:
-        user_data = response.json()
-        followers_count = user_data["data"]["public_metrics"]["followers_count"]
-        followers_data[username] = followers_count
-    else:
-        print(f"エラー: {response.status_code} - @{username}")
-  
-    time.sleep(1) 
-    followers_data_list.append(followers_data)
+def fetch_twitter_data():
+    response = requests.get(user_url, headers=headers)
+            if response.status_code != 200:
+                raise Exception(f"HTTP {response.status_code}: {response.text}")
+            return response.json()
+
+try:
+            user_data = retry_request(fetch_twitter_data)
+            followers_count = user_data["data"]["public_metrics"]["followers_count"]
+            followers_data[username] = followers_count
+            print(f" @{username} のフォロワー数: {followers_count}")
+        except Exception as e:
+            print(f"⚠ エラー: {e} - @{username}")
+        time.sleep(1)
+
+followers_data_list.append(followers_data)
+
 
 # 新しいデータフレームを作成
 new_data = pd.DataFrame(followers_data_list)
