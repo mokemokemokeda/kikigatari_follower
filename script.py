@@ -63,7 +63,7 @@ url = "https://api.twitter.com/2/users/by/username/"
 
 # 日付取得
 today = datetime.today().strftime("%Y/%m/%d")
-followers_data_list = []
+followers_data = {"Date": today}
 
 # Google Drive から Twitter アカウントリスト取得
 file_id = get_file_id("kikigatari_accounts.csv")
