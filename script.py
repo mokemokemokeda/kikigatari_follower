@@ -111,4 +111,15 @@ with io.BytesIO() as fh:
         file_metadata = {"name": history_file, "mimeType": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"}
         drive_service.files().create(body=file_metadata, media_body=media).execute()
 
-print("フォロワー数を更新しました")
+for username in df["username"]:
+    user_url = f"{url}{username}?user.fields=public_metrics"
+    response = requests.get(user_url, headers=headers)
+
+    print(f"🔍 {username} → status: {response.status_code}")
+    if response.status_code != 200:
+        print("レスポンス内容:", response.text)  # エラーメッセージの内容確認
+        continue  # スキップ
+
+    user_data = response.json()
+    followers_count = user_data["data"]["public_metrics"]["followers_count"]
+    followers_data[username] = followers_count
