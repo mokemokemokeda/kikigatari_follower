@@ -115,7 +115,7 @@ for username in df["username"]:
     user_url = f"{url}{username}?user.fields=public_metrics"
     response = requests.get(user_url, headers=headers)
 
-    print(f"🔍 {username} → status: {response.status_code}")
+    
     if response.status_code != 200:
         print("レスポンス内容:", response.text)  # エラーメッセージの内容確認
         continue  # スキップ
