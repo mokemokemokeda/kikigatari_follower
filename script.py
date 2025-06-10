@@ -81,7 +81,7 @@ for username in df["username"]:
         followers_data[username] = followers_count
 
 # 新しいデータフレームを作成
-new_data = pd.DataFrame(followers_data)
+new_data = pd.DataFrame([followers_data])
 
 # 記録ファイルの取得と更新
 history_file = "kikigatari_shukei.xlsx"  # ファイル名を変更
